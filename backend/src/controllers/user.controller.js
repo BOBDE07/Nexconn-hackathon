@@ -1,7 +1,6 @@
 import { User } from "../model/user.model.js";
 import generateToken from "../utils/generateToken.utils.js";
 
-
 const registerUser = async (req, res) => {
     try {
         const { fullname, email, password } = req.body ;
@@ -135,8 +134,131 @@ const getUserDetail = async (req , res ) => {
     }
 }
 
+
+const updateUserProfile = async (req, res) => {
+    try {
+        const userId = req.user._id;
+        const { fullname, avatarURL } = req.body;
+
+        // Validate that at least one field is provided
+        if (fullname === undefined && avatarURL === undefined) {
+            return res.status(400).json({
+                success: false,
+                message: 'Please provide at least one field to update.'
+            });
+        }
+
+        // Prepare update object
+        const updateFields = {};
+
+        if (fullname !== undefined) {
+            if (typeof fullname !== 'string' || !fullname.trim()) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Fullname cannot be empty.'
+                });
+            }
+
+            updateFields.fullname = fullname.trim();
+        }
+
+        if (avatarURL !== undefined) {
+            if (typeof avatarURL !== 'string') {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Invalid avatar URL.'
+                });
+            }
+
+            updateFields.avatarURL = avatarURL.trim();
+        }
+
+        // Update user
+        const updatedUser = await User.findByIdAndUpdate(
+            userId,
+            { $set: updateFields },
+            {
+                new: true,
+                runValidators: true
+            }
+        );
+
+        if (!updatedUser) {
+            return res.status(404).json({
+                success: false,
+                message: 'User not found.'
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: 'Profile updated successfully.',
+            user: updatedUser
+        });
+
+    } catch (error) {
+        console.error('Error in update profile:', error);
+
+        return res.status(500).json({
+            success: false,
+            message: 'Internal server error.'
+        });
+    }
+};
+
+const deleteUserProfile = async ( req , res) => {
+    try {
+        const userId = req.user._id ; 
+
+        const deleteUser = await User.findByIdAndDelete(userId) ; 
+
+        if (!deletedUser) {
+            return res.status(404).json({
+                success: false,
+                message: 'User not found.'
+            });
+        }
+
+        return res.status(200).json({
+            success: true , 
+            message: 'User deleted successfully.' , 
+            deleteUser
+        })
+        
+    } catch (error) {
+        console.log('Error in deleting User: ', error) ; 
+
+        return res.status(500).json({
+            success: false , 
+            message: error.message || 'internal server error.'
+        })
+        
+    }
+}
+
+const logOutUser = async (req , res ) => {
+    try {
+        return res.status(200).json({
+            success: true , 
+            message: 'User logged out successfully.'
+        })
+    } catch (error) {
+        console.log('Error in logout: ', error) ;
+
+        return res.status(500).json({
+            success: false , 
+            message: error.message || 'internal server error.'
+        })
+    }
+} 
+
+
+
 export { 
     registerUser ,
     userLogin , 
-    getUserDetail
+    getUserDetail , 
+    updateUserProfile , 
+    deleteUserProfile , 
+    logOutUser
 };
