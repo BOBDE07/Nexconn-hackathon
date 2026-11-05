@@ -112,7 +112,31 @@ const userLogin = async ( req , res ) => {
     }
 } ; 
 
+const getUserDetail = async (req , res ) => {
+    try {
+        const user = {
+            _id: req.user._id,
+            fullname: req.user.fullname,
+            email: req.user.email,
+            avatarURL: req.user.avatarURL,
+            createdAt: req.user.createdAt
+        };
+        return res.status(200).json({
+            success : true , 
+            message:'User details' , 
+            user  , 
+        })
+    } catch (error) {
+        console.log('error in User detail: ', error) ; 
+        return res.status(500).json({
+            succes: false , 
+            message: error.message || 'Internal server error.'    
+        })
+    }
+}
+
 export { 
     registerUser ,
-    userLogin
+    userLogin , 
+    getUserDetail
 };
