@@ -94,15 +94,15 @@ const userLogin = async ( req , res ) => {
 
 
         return res.status(200).json({
-            success: false ,
-            message: 'User logged in successfully.', 
-            user: safeUser , 
-            token 
+            success: true,
+            message: 'User logged in successfully.',
+            user: safeUser,
+            token
         })
 
 
     } catch (error) {
-        console.log('error in login: ' , error) ; 
+        console.error('Error in login:', error);
         return  res.status(500).json({
             success: false , 
             message: error.message || 'Internal server error.'
@@ -126,9 +126,9 @@ const getUserDetail = async (req , res ) => {
             user  , 
         })
     } catch (error) {
-        console.log('error in User detail: ', error) ; 
+        console.error('Error in getUserDetail:', error);
         return res.status(500).json({
-            succes: false , 
+            succes: false,
             message: error.message || 'Internal server error.'    
         })
     }
@@ -210,7 +210,7 @@ const deleteUserProfile = async ( req , res) => {
     try {
         const userId = req.user._id ; 
 
-        const deleteUser = await User.findByIdAndDelete(userId) ; 
+        const deletedUser = await User.findByIdAndDelete(userId);
 
         if (!deletedUser) {
             return res.status(404).json({
@@ -220,13 +220,13 @@ const deleteUserProfile = async ( req , res) => {
         }
 
         return res.status(200).json({
-            success: true , 
-            message: 'User deleted successfully.' , 
-            deleteUser
+            success: true,
+            message: 'User deleted successfully.',
+            user: deletedUser
         })
         
     } catch (error) {
-        console.log('Error in deleting User: ', error) ; 
+        console.error('Error in deleteUserProfile:', error);
 
         return res.status(500).json({
             success: false , 
@@ -243,7 +243,7 @@ const logOutUser = async (req , res ) => {
             message: 'User logged out successfully.'
         })
     } catch (error) {
-        console.log('Error in logout: ', error) ;
+        console.error('Error in logOutUser:', error);
 
         return res.status(500).json({
             success: false , 
